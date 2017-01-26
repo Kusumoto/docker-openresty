@@ -74,13 +74,11 @@ http {
             ';
 
             log_by_lua '
-                local lua_resty_waf = require "resty.waf"
+                local lua_resty_waf = require "waf"
 
                 local waf = lua_resty_waf:new()
 
-                -- write out any event log entries to the
-                -- configured target, if applicable
-                waf:write_log_events()
+                waf:exec()
             ';
         }
     }
