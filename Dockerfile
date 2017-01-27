@@ -53,6 +53,7 @@ ARG _RESTY_CONFIG_DEPS="--with-openssl=/tmp/openssl-${RESTY_OPENSSL_VERSION} --w
 
 RUN \
     apk add --no-cache --virtual .build-deps \
+        bash \
         build-base \
         curl \
         gd-dev \
@@ -85,6 +86,7 @@ RUN \
     && make -j${RESTY_J} \
     && make -j${RESTY_J} install \
     && cd /usr/local/openresty \
+    && export PATH=$PATH:/usr/local/openresty/bin \
     && git clone https://github.com/p0pr0ck5/lua-resty-waf.git \
     && cd lua-resty-waf \
     && git clone https://github.com/client9/libinjection.git \
