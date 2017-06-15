@@ -12,7 +12,7 @@ ARG RESTY_VERSION="1.11.2.3"
 ARG RESTY_OPENSSL_VERSION="1.0.2k"
 ARG RESTY_PCRE_VERSION="8.39"
 ARG RESTY_J="1"
-ARG RESTY_WAF_VERSION="0.8.2"
+ARG RESTY_WAF_VERSION="0.11.1"
 ARG LUAROCKS_VERSION="2.4.1"
 ARG RESTY_CONFIG_OPTIONS="\
     --with-file-aio \
@@ -105,6 +105,7 @@ RUN \
         openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
         openresty-${RESTY_VERSION}.tar.gz openresty-${RESTY_VERSION} \
         pcre-${RESTY_PCRE_VERSION}.tar.gz pcre-${RESTY_PCRE_VERSION} \
+        luarocks-${LUAROCKS_VERSION}.tar.gz luarocks-${LUAROCKS_VERSION} \
     && apk del .build-deps \
     && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
     && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
