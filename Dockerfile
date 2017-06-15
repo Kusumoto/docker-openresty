@@ -4,12 +4,16 @@ FROM alpine:latest
 
 MAINTAINER Weerayut Hongsa <kusumoto.com@gmail.com>
 
+# ENV FOR RESTY FIX FOR RUN OPM
+ENV PATH="/usr/local/openresty/bin:${PATH}"
+
 # Docker Build Arguments
-ARG RESTY_VERSION="1.11.2.2"
-ARG RESTY_OPENSSL_VERSION="1.0.2j"
+ARG RESTY_VERSION="1.11.2.3"
+ARG RESTY_OPENSSL_VERSION="1.0.2k"
 ARG RESTY_PCRE_VERSION="8.39"
 ARG RESTY_J="1"
-ARG RESTY_WAF_VERSION="0.8.2"
+ARG RESTY_WAF_VERSION="0.11.1"
+ARG LUAROCKS_VERSION="2.4.1"
 ARG RESTY_CONFIG_OPTIONS="\
     --with-file-aio \
     --with-http_addition_module \
@@ -73,22 +77,26 @@ RUN \
         libstdc++ \
         python \
         lua5.1-dev \
+        bash \
     && cd /tmp \
-    && curl -fSL https://www.openssl.org/source/openssl-${RESTY_OPENSSL_VERSION}.tar.gz -o openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
+    && curl -fSLk https://www.openssl.org/source/openssl-${RESTY_OPENSSL_VERSION}.tar.gz -o openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
     && tar xzf openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
-    && curl -fSL https://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-${RESTY_PCRE_VERSION}.tar.gz -o pcre-${RESTY_PCRE_VERSION}.tar.gz \
+    && curl -fSLk https://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-${RESTY_PCRE_VERSION}.tar.gz -o pcre-${RESTY_PCRE_VERSION}.tar.gz \
     && tar xzf pcre-${RESTY_PCRE_VERSION}.tar.gz \
-    && curl -fSL https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o openresty-${RESTY_VERSION}.tar.gz \
+    && curl -fSLk https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o openresty-${RESTY_VERSION}.tar.gz \
     && tar xzf openresty-${RESTY_VERSION}.tar.gz \
+    && curl -fSLk https://luarocks.org/releases/luarocks-${LUAROCKS_VERSION}.tar.gz -o luarocks-${LUAROCKS_VERSION}.tar.gz \
+    && tar xzf luarocks-${LUAROCKS_VERSION}.tar.gz \
+    && cd /tmp/luarocks-${LUAROCKS_VERSION} \
+    && ./configure \
+    && make bootstrap \
     && cd /tmp/openresty-${RESTY_VERSION} \
     && ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} \
     && make -j${RESTY_J} \
     && make -j${RESTY_J} install \
     && cd /usr/local/openresty \
-    && git clone https://github.com/p0pr0ck5/lua-resty-waf.git \
+    && git clone https://github.com/p0pr0ck5/lua-resty-waf.git --recursive \
     && cd lua-resty-waf \
-    && git clone https://github.com/client9/libinjection.git \
-    && git clone https://github.com/cloudflare/lua-aho-corasick.git \
     && make \
     && make install \
     && cd /tmp \
@@ -97,6 +105,7 @@ RUN \
         openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
         openresty-${RESTY_VERSION}.tar.gz openresty-${RESTY_VERSION} \
         pcre-${RESTY_PCRE_VERSION}.tar.gz pcre-${RESTY_PCRE_VERSION} \
+        luarocks-${LUAROCKS_VERSION}.tar.gz luarocks-${LUAROCKS_VERSION} \
     && apk del .build-deps \
     && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
     && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
