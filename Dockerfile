@@ -4,7 +4,7 @@ FROM alpine:latest
 
 MAINTAINER Weerayut Hongsa <kusumoto.com@gmail.com>
 
-# ENV FOR RESTY
+# ENV FOR RESTY FIX FOR RUN OPM
 ENV PATH="/usr/local/openresty/bin:${PATH}"
 
 # Docker Build Arguments
