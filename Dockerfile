@@ -8,12 +8,12 @@ MAINTAINER Weerayut Hongsa <kusumoto.com@gmail.com>
 ENV PATH="/usr/local/openresty/bin:${PATH}"
 
 # Docker Build Arguments
-ARG RESTY_VERSION="1.11.2.3"
+ARG RESTY_VERSION="1.11.2.5"
 ARG RESTY_OPENSSL_VERSION="1.0.2k"
 ARG RESTY_PCRE_VERSION="8.39"
 ARG RESTY_J="1"
 ARG RESTY_WAF_VERSION="0.11.1"
-ARG LUAROCKS_VERSION="2.4.1"
+ARG LUAROCKS_VERSION="2.4.2"
 ARG RESTY_CONFIG_OPTIONS="\
     --with-file-aio \
     --with-http_addition_module \
