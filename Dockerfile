@@ -8,7 +8,7 @@ MAINTAINER Weerayut Hongsa <kusumoto.com@gmail.com>
 ENV PATH="/usr/local/openresty/bin:${PATH}"
 
 # Docker Build Arguments
-ARG RESTY_VERSION="1.11.2.5"
+ARG RESTY_VERSION="1.13.6.1"
 ARG RESTY_OPENSSL_VERSION="1.0.2k"
 ARG RESTY_PCRE_VERSION="8.39"
 ARG RESTY_J="1"
