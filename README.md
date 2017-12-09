@@ -3,6 +3,8 @@ Docker tooling for OpenResty build-in lua-resty-waf
 
 Base from : https://github.com/openresty/docker-openresty
 
+[![Docker Build Status](https://img.shields.io/docker/build/kusumoto/docker-openresty.svg)](https://hub.docker.com/r/kusumoto/docker-openresty/)
+
 ## Original Source 
 
 Openresty : https://openresty.org/
