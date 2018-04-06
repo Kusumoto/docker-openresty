@@ -39,6 +39,7 @@ ARG RESTY_CONFIG_OPTIONS="\
     --with-mail_ssl_module \
     --with-md5-asm \
     --with-pcre-jit \
+    --with-pcre \
     --with-sha1-asm \
     --with-stream \
     --with-stream_ssl_module \
@@ -78,6 +79,7 @@ RUN \
         python \
         lua5.1-dev \
         bash \
+        pcre-dev \
     && cd /tmp \
     && curl -fSLk https://www.openssl.org/source/openssl-${RESTY_OPENSSL_VERSION}.tar.gz -o openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
     && tar xzf openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
@@ -90,6 +92,7 @@ RUN \
     && cd /tmp/luarocks-${LUAROCKS_VERSION} \
     && ./configure \
     && make bootstrap \
+    && luarocks install lrexlib-pcre 2.7.2-1 \
     && cd /tmp/openresty-${RESTY_VERSION} \
     && ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} \
     && make -j${RESTY_J} \
