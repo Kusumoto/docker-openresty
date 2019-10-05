@@ -98,7 +98,7 @@ RUN \
     && make -j${RESTY_J} \
     && make -j${RESTY_J} install \
     && cd /usr/local/openresty \
-    && git clone https://github.com/p0pr0ck5/lua-resty-waf.git --recursive \
+    && git clone --single-branch --branch development https://github.com/p0pr0ck5/lua-resty-waf.git --recursive \
     && cd lua-resty-waf \
     && make \
     && make install \
