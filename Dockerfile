@@ -8,12 +8,12 @@ MAINTAINER Weerayut Hongsa <kusumoto.com@gmail.com>
 ENV PATH="/usr/local/openresty/bin:${PATH}"
 
 # Docker Build Arguments
-ARG RESTY_VERSION="1.13.6.1"
-ARG RESTY_OPENSSL_VERSION="1.0.2k"
-ARG RESTY_PCRE_VERSION="8.39"
+ARG RESTY_VERSION="1.15.8.2"
+ARG RESTY_OPENSSL_VERSION="1.1.1c"
+ARG RESTY_PCRE_VERSION="8.43"
 ARG RESTY_J="1"
 ARG RESTY_WAF_VERSION="22928d9b4599dfa1cde166d63ead5393656407a1"
-ARG LUAROCKS_VERSION="2.4.2"
+ARG LUAROCKS_VERSION="3.2.1"
 ARG RESTY_CONFIG_OPTIONS="\
     --with-file-aio \
     --with-http_addition_module \
@@ -65,6 +65,8 @@ RUN \
         libxslt-dev \
         linux-headers \
         make \
+        outils-md5 \
+        unzip \
         perl-dev \
         readline-dev \
         zlib-dev \
@@ -83,8 +85,37 @@ RUN \
     && cd /tmp \
     && curl -fSLk https://www.openssl.org/source/openssl-${RESTY_OPENSSL_VERSION}.tar.gz -o openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
     && tar xzf openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
+    && cd openssl-${RESTY_OPENSSL_VERSION} \
+    && if [ $(echo ${RESTY_OPENSSL_VERSION} | cut -c 1-5) = "1.1.1" ] ; then \
+        echo 'patching OpenSSL 1.1.1 for OpenResty' \
+        && curl -s https://raw.githubusercontent.com/openresty/openresty/master/patches/openssl-1.1.1c-sess_set_get_cb_yield.patch | patch -p1 ; \
+    fi \
+    && if [ $(echo ${RESTY_OPENSSL_VERSION} | cut -c 1-5) = "1.1.0" ] ; then \
+        echo 'patching OpenSSL 1.1.0 for OpenResty' \
+        && curl -s https://raw.githubusercontent.com/openresty/openresty/ed328977028c3ec3033bc25873ee360056e247cd/patches/openssl-1.1.0j-parallel_build_fix.patch | patch -p1 \
+        && curl -s https://raw.githubusercontent.com/openresty/openresty/master/patches/openssl-1.1.0d-sess_set_get_cb_yield.patch | patch -p1 ; \
+    fi \
+    && ./config \
+      no-threads shared zlib -g \
+      enable-ssl3 enable-ssl3-method \
+      --prefix=/usr/local/openresty/openssl \
+      --libdir=lib \
+      -Wl,-rpath,/usr/local/openresty/openssl/lib \
+    && make -j${RESTY_J} \
+    && make -j${RESTY_J} install_sw \
+    && cd /tmp \
     && curl -fSLk https://ftp.pcre.org/pub/pcre/pcre-${RESTY_PCRE_VERSION}.tar.gz -o pcre-${RESTY_PCRE_VERSION}.tar.gz \
     && tar xzf pcre-${RESTY_PCRE_VERSION}.tar.gz \
+    && cd pcre-${RESTY_PCRE_VERSION} \
+    && ./configure \
+        --prefix=/usr/local/openresty/pcre \
+        --disable-cpp \
+        --enable-jit \
+        --enable-utf \
+        --enable-unicode-properties \
+    && make -j${RESTY_J} \
+    && make -j${RESTY_J} install \
+    && cd /tmp \
     && curl -fSLk https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o openresty-${RESTY_VERSION}.tar.gz \
     && tar xzf openresty-${RESTY_VERSION}.tar.gz \
     && curl -fSLk https://luarocks.org/releases/luarocks-${LUAROCKS_VERSION}.tar.gz -o luarocks-${LUAROCKS_VERSION}.tar.gz \
@@ -92,7 +123,6 @@ RUN \
     && cd /tmp/luarocks-${LUAROCKS_VERSION} \
     && ./configure \
     && make bootstrap \
-    && luarocks install lrexlib-pcre 2.7.2-1 \
     && cd /tmp/openresty-${RESTY_VERSION} \
     && ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} \
     && make -j${RESTY_J} \
