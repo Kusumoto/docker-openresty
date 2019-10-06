@@ -12,7 +12,7 @@ ARG RESTY_VERSION="1.13.6.1"
 ARG RESTY_OPENSSL_VERSION="1.0.2k"
 ARG RESTY_PCRE_VERSION="8.39"
 ARG RESTY_J="1"
-ARG RESTY_WAF_VERSION="84b4f40362500dd0cb98b9e71b5875cb1a40f1ad-snapshot"
+ARG RESTY_WAF_VERSION="22928d9b4599dfa1cde166d63ead5393656407a1"
 ARG LUAROCKS_VERSION="2.4.2"
 ARG RESTY_CONFIG_OPTIONS="\
     --with-file-aio \
@@ -83,7 +83,7 @@ RUN \
     && cd /tmp \
     && curl -fSLk https://www.openssl.org/source/openssl-${RESTY_OPENSSL_VERSION}.tar.gz -o openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
     && tar xzf openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
-    && curl -fSLk https://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-${RESTY_PCRE_VERSION}.tar.gz -o pcre-${RESTY_PCRE_VERSION}.tar.gz \
+    && curl -fSLk https://ftp.pcre.org/pub/pcre/pcre-${RESTY_PCRE_VERSION}.tar.gz -o pcre-${RESTY_PCRE_VERSION}.tar.gz \
     && tar xzf pcre-${RESTY_PCRE_VERSION}.tar.gz \
     && curl -fSLk https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o openresty-${RESTY_VERSION}.tar.gz \
     && tar xzf openresty-${RESTY_VERSION}.tar.gz \
@@ -98,7 +98,7 @@ RUN \
     && make -j${RESTY_J} \
     && make -j${RESTY_J} install \
     && cd /usr/local/openresty \
-    && git clone https://github.com/p0pr0ck5/lua-resty-waf.git --recursive \
+    && git clone --single-branch --branch development https://github.com/p0pr0ck5/lua-resty-waf.git --recursive \
     && cd lua-resty-waf \
     && make \
     && make install \
