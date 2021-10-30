@@ -2,13 +2,13 @@
 
 FROM alpine:latest
 
-MAINTAINER Weerayut Hongsa <kusumoto.com@gmail.com>
+LABEL MAINTAINER="Weerayut Hongsa <kusumoto.com@gmail.com>"
 
 # ENV FOR RESTY FIX FOR RUN OPM
 ENV PATH="/usr/local/openresty/bin:${PATH}"
 
 # Docker Build Arguments
-ARG RESTY_VERSION="1.15.8.2"
+ARG RESTY_VERSION="1.19.9.1"
 ARG RESTY_OPENSSL_VERSION="1.1.1c"
 ARG RESTY_PCRE_VERSION="8.43"
 ARG RESTY_J="1"
